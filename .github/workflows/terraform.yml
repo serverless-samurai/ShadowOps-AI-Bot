@@ -2,36 +2,38 @@ name: Terraform Deployment
 
 on:
   push:
-    paths:
-      - "infra/**"
     branches:
       - main
+  workflow_dispatch:
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
 
 jobs:
   deploy:
+    name: "Deploy Azure Infra with Terraform"
     runs-on: ubuntu-latest
-    environment: production
 
     steps:
-      - name: Checkout repo
+      - name: ⬇️ Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Terraform
+      - name: ⚙️ Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.5.7
 
-      - name: Terraform Init
+      - name: 📁 Terraform Init
         run: terraform init
         working-directory: infra
 
-      - name: Terraform Plan
-        run: terraform plan -var-file="terraform.tfvars"
+      - name: 📄 Terraform Plan
+        run: terraform plan -var="openai_api_key=${{ secrets.OPENAI_API_KEY }}"
         working-directory: infra
 
-      - name: Terraform Apply
-        run: terraform apply -auto-approve -var-file="terraform.tfvars"
+      - name: 🚀 Terraform Apply
+        run: terraform apply -auto-approve -var="openai_api_key=${{ secrets.OPENAI_API_KEY }}"
         working-directory: infra
-
-    env:
-      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
