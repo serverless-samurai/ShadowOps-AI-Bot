@@ -3,7 +3,7 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "rg" {
-  name     = "rg-shadowops-ai"
+  name     = "rg-shadow-ai"
   location = "East US"
 }
 
