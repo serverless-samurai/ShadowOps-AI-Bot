@@ -8,7 +8,7 @@ resource "azurerm_resource_group" "rg" {
 }
 
 resource "azurerm_storage_account" "sa" {
-  name                     = "shadowopsstorage"
+  name                     = "shadowopsstorage"  # ⚠️ Must be globally unique
   resource_group_name      = azurerm_resource_group.rg.name
   location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"
@@ -20,6 +20,7 @@ resource "azurerm_app_service_plan" "plan" {
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   kind                = "FunctionApp"
+
   sku {
     tier = "Dynamic"
     size = "Y1"
@@ -42,14 +43,14 @@ resource "azurerm_function_app" "func" {
   storage_account_access_key = azurerm_storage_account.sa.primary_access_key
   version                    = "~4"
   os_type                    = "linux"
-  runtime_stack              = "python"
+  https_only                 = true
 
-  app_settings = {
-    "AzureWebJobsStorage" = azurerm_storage_account.sa.primary_connection_string
-    "FUNCTIONS_WORKER_RUNTIME" = "python"
-    "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.insights.instrumentation_key
-    "OPENAI_API_KEY" = var.openai_api_key
-  }
+app_settings = {
+  AzureWebJobsStorage             = azurerm_storage_account.sa.primary_connection_string
+  FUNCTIONS_WORKER_RUNTIME       = "python"  # ✅ this defines Python runtime
+  APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.insights.instrumentation_key
+  OPENAI_API_KEY                 = var.openai_api_key
+}
 }
 
 resource "azurerm_eventhub_namespace" "ehns" {
