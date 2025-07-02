@@ -47,7 +47,7 @@ resource "azurerm_function_app" "func" {
 
 app_settings = {
   AzureWebJobsStorage             = azurerm_storage_account.sa.primary_connection_string
-  FUNCTIONS_WORKER_RUNTIME       = "python"  # ✅ this defines Python runtime
+  FUNCTIONS_WORKER_RUNTIME       = "python"  
   APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.insights.instrumentation_key
   OPENAI_API_KEY                 = var.openai_api_key
 }
